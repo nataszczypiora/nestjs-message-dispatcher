@@ -12,7 +12,10 @@ import {
   Action,
   MessageEventEmitter,
 } from '../src/message-dispatcher.decorator';
-import { MessageDispatcherInterceptor } from '../src/message-dispatcher.interceptor';
+import {
+  AsyncLoggerProvider,
+  MessageDispatcherInterceptor,
+} from '../src/message-dispatcher.interceptor';
 import {
   Message,
   MsgActionType,
@@ -27,7 +30,9 @@ jest.useFakeTimers().setSystemTime(new Date(`${timeString}Z`).getTime());
 
 @Injectable()
 class NatsClientService {
-  async log(pattern: string, data: Record<string, unknown>) {}
+  async log(pattern: string, data: Record<string, unknown>) {
+    console.log('Nats Client Service -------', pattern, data);
+  }
 }
 
 @Module({
@@ -44,6 +49,7 @@ export class MessageDispatcherTestController {
   })
   @Get(':id')
   async test(@Param() params: { id: string }): Promise<{ id: string }> {
+    console.log({ id: params.id });
     return { id: params.id };
   }
 }
@@ -61,6 +67,10 @@ describe('Message Dispatcher', () => {
       providers: [
         NatsClientService,
         MessageDispatcherInterceptor,
+        {
+          provide: AsyncLoggerProvider,
+          useExisting: NatsClientService,
+        },
         {
           provide: Options,
           useValue: <Options>{
