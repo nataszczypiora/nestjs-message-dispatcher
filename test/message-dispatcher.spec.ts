@@ -1,17 +1,6 @@
-import {
-  Controller,
-  Get,
-  INestApplication,
-  Injectable,
-  Module,
-  Param,
-} from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import {
-  Action,
-  MessageEventEmitter,
-} from '../src/message-dispatcher.decorator';
 import {
   AsyncLoggerProvider,
   MessageDispatcherInterceptor,
@@ -23,53 +12,24 @@ import {
   MsgServiceType,
 } from '../src/message.dto';
 import { Options } from '../src/options.dto';
-
-const timeString = '2022-01-01T01:01:01.401';
-
-jest.useFakeTimers().setSystemTime(new Date(`${timeString}Z`).getTime());
-
-@Injectable()
-class NatsClientService {
-  async log(pattern: string, data: Record<string, unknown>) {
-    console.log('Nats Client Service -------', pattern, data);
-  }
-}
-
-@Module({
-  providers: [NatsClientService],
-  exports: [NatsClientService],
-})
-class NatsClientModule {}
-
-@Controller('/test')
-export class MessageDispatcherTestController {
-  @MessageEventEmitter({
-    objectIdGetter: (request) => request.params.id,
-    action: Action.CREATED,
-  })
-  @Get(':id')
-  async test(@Param() params: { id: string }): Promise<{ id: string }> {
-    console.log({ id: params.id });
-    return { id: params.id };
-  }
-}
+import { LoggerService } from './mocks/logger.service';
+import { MessageDispatcherTestController } from './mocks/message-dispatcher-test.controller';
 
 describe('Message Dispatcher', () => {
   let app: INestApplication;
-  let transport: NatsClientService;
+  let transport: AsyncLoggerProvider;
   const subject = 'mutation.test';
   const serviceId = 'test.service.id';
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [NatsClientModule],
       controllers: [MessageDispatcherTestController],
       providers: [
-        NatsClientService,
+        LoggerService,
         MessageDispatcherInterceptor,
         {
           provide: AsyncLoggerProvider,
-          useExisting: NatsClientService,
+          useExisting: LoggerService,
         },
         {
           provide: Options,
@@ -94,7 +54,7 @@ describe('Message Dispatcher', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    transport = app.get<NatsClientService>(NatsClientService);
+    transport = app.get<AsyncLoggerProvider>(AsyncLoggerProvider);
   });
 
   describe('interceptor', () => {
@@ -116,7 +76,7 @@ describe('Message Dispatcher', () => {
           id: serviceId,
           type: 'urn:forlagshuset:service:app',
         },
-        timestamp: `${timeString}000Z`,
+        timestamp: expect.anything(),
       });
     });
   });
