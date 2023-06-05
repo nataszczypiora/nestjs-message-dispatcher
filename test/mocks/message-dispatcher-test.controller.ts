@@ -1,5 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { Action, MessageEventEmitter } from 'src/message-dispatcher.decorator';
+import {
+  Action,
+  MessageEventEmitter,
+} from '../../src/message-dispatcher.decorator';
 
 @Controller('/test')
 export class MessageDispatcherTestController {
