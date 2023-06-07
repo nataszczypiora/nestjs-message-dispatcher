@@ -58,12 +58,15 @@ describe('Message Dispatcher', () => {
   });
 
   describe('interceptor', () => {
-    it('should create and send message', async () => {
+    beforeEach(async () => {
       jest.spyOn(transport, 'log');
-      const id = '123-test';
-
+    });
+    afterEach(async () => {
+      jest.clearAllMocks();
+    });
+    const id = '123-test';
+    it('should create and send message', async () => {
       await request(app.getHttpServer()).get(`/test/${id}`).expect(200);
-
       expect(transport.log).toHaveBeenCalledTimes(1);
       expect(transport.log).toHaveBeenCalledWith(subject, {
         action: { type: 'urn:forlagshuset:action:object', verb: 'created' },
