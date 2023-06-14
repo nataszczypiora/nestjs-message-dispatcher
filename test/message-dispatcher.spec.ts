@@ -1,10 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import {
-  AsyncLoggerProvider,
-  MessageDispatcherInterceptor,
-} from '../src/message-dispatcher.interceptor';
+import { AsyncLoggerProvider } from '../src/async-logger-provider.interface';
+import { MessageDispatcherInterceptor } from '../src/message-dispatcher.interceptor';
 import {
   Message,
   MsgActionType,
@@ -12,7 +10,6 @@ import {
   MsgServiceType,
 } from '../src/message.dto';
 import { Options } from '../src/options.dto';
-import { LoggerService } from './mocks/logger.service';
 import { MessageDispatcherTestController } from './mocks/message-dispatcher-test.controller';
 
 describe('Message Dispatcher', () => {
@@ -25,11 +22,10 @@ describe('Message Dispatcher', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [MessageDispatcherTestController],
       providers: [
-        LoggerService,
         MessageDispatcherInterceptor,
         {
           provide: AsyncLoggerProvider,
-          useExisting: LoggerService,
+          useValue: { log: jest.fn() },
         },
         {
           provide: Options,

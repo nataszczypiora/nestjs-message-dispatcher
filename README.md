@@ -32,11 +32,10 @@ Module({
             type: MsgObjectType.ErudioNamespace,
           },
         },
-    },
+      },
     },
   ],
-  }).compile();
-});
+}).compile();
 
 ```
 
