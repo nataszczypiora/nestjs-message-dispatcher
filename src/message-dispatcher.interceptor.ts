@@ -8,15 +8,12 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { AsyncLoggerProvider } from './async-logger-provider.interface';
 import {
   DispatcherOptions,
   DispatcherParamsMetadata,
 } from './message-dispatcher.decorator';
 import { Options } from './options.dto';
-
-export abstract class AsyncLoggerProvider {
-  log(_subject: string, _data: Record<string, unknown>) {}
-}
 
 @Injectable()
 export class MessageDispatcherInterceptor implements NestInterceptor {
