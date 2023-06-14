@@ -1,6 +1,6 @@
 {
   "name": "message_dispatcher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Creates and send messages to nats",
   "main": "dist/index.js",
   "directories": {
