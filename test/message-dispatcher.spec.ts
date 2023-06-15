@@ -78,5 +78,11 @@ describe('Message Dispatcher', () => {
         timestamp: expect.anything(),
       });
     });
+
+    it('should omit sending message if returned data does not exists', async () => {
+      await request(app.getHttpServer()).get(`/test/undefined`).expect(200);
+
+      expect(transport.log).toBeCalledTimes(0);
+    });
   });
 });

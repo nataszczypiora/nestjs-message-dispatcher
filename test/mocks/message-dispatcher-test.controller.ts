@@ -7,6 +7,15 @@ import {
 @Controller('/test')
 export class MessageDispatcherTestController {
   @MessageEventEmitter({
+    objectIdGetter: () => undefined,
+    action: Action.CREATED,
+  })
+  @Get('/undefined')
+  async undefinedTest(): Promise<{ id: string }> {
+    return;
+  }
+
+  @MessageEventEmitter({
     objectIdGetter: (request) => request.params.id,
     action: Action.CREATED,
   })
